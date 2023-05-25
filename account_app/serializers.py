@@ -10,17 +10,18 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "password", "password2",
+        fields = ("id", "password", "password2",
                   "first_name", "last_name", "email")
         extra_kwargs = {"password": {"write_only": True, "validators": [validate_password]},
                         "email": {"required": True, "validators": [UniqueValidator(User.objects.all())]}
                         }
 
     def create(self, validated_data):
-        user = User.objects.create(**validated_data)
+        # user = User.objects.create(**validated_data)
         password = validated_data.pop("password")
         validated_data.pop("password2")
         user = User(**validated_data)
+        user.username = user.email        
         user.set_password(password)
         user.save()
         return user
